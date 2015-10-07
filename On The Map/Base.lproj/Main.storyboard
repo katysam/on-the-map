@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="udacity.pdf" translatesAutoresizingMaskIntoConstraints="NO" id="M57-OM-9r6">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Udacity.pdf" translatesAutoresizingMaskIntoConstraints="NO" id="M57-OM-9r6">
                                 <rect key="frame" x="240" y="20" width="120" height="120"/>
                                 <animations/>
                                 <constraints>
@@ -547,10 +547,10 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Udacity.pdf" width="256" height="256"/>
         <image name="list.pdf" width="32" height="32"/>
         <image name="map.pdf" width="32" height="32"/>
         <image name="pin.pdf" width="32" height="32"/>
-        <image name="udacity.pdf" width="256" height="256"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="0lb-2I-8E5"/>
