@@ -7,13 +7,10 @@
 //
 
 import UIKit
-import FBSDKCoreKit
-import FBSDKLoginKit
 
 class LoginViewController: UIViewController {
     
     var udacityClient = UdacityClient()
-    var facebookClient = FacebookClient()
 
     
     var appDelegate: AppDelegate!
@@ -40,8 +37,6 @@ class LoginViewController: UIViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-//        FBSDKLoginButton()
         
         /* Get the app delegate */
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
