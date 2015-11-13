@@ -43,7 +43,7 @@ struct StudentLocation {
     }
     
     
-    /* Helper: Given an array of dictionaries, convert them to an array of TMDBMovie objects */
+    /* Helper: Given an array of dictionaries, convert them to an array of Student objects */
     static func locationsFromResults(results: [[String : AnyObject]]) -> [StudentLocation] {
         var locations = [StudentLocation]()
         
@@ -54,3 +54,17 @@ struct StudentLocation {
         return locations
     }
 }
+
+class StudentLocationData {
+    
+}
+
+
+var mapData: [StudentLocation]!
+
+var loggedInAs = "geek"
+var loggedInLastName = ""
+var loggedInFirstName = ""
+
+
+

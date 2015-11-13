@@ -8,45 +8,56 @@
 
 import UIKit
 import MapKit
+import CoreLocation
 
-class SubmitInfoViewController : UIViewController {
+class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
+    
+    let locationManager = CLLocationManager()
     
     var udacityClient = UdacityClient()
     var appDelegate = AppDelegate()
-    var locations: [StudentLocation]!
-    
-    var annotation:MKAnnotation!
-    var localSearchRequest:MKLocalSearchRequest!
-    var localSearch:MKLocalSearch!
-    var localSearchResponse:MKLocalSearchResponse!
-    var error:NSError!
-    var pointAnnotation:MKPointAnnotation!
-    var pinAnnotationView:MKPinAnnotationView!
+    var studentLocationData = StudentLocationData()
 
     @IBOutlet var mainView: UIView!
+    var firstNameEntry: String!
+    var lastNameEntry: String!
+    @IBOutlet weak var loggedInName: UILabel!
     
-    @IBOutlet weak var firstName: UITextField!
-    @IBOutlet weak var lastName: UITextField!
     @IBOutlet weak var locationString: UITextField!
     @IBOutlet weak var webAddress: UITextField!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var mapView: MKMapView!
 
-    var lat: Double!
-    var lng: Double!
+    var studyLocation: CLPlacemark!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         /* Get the app delegate */
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        locations = appDelegate.mapData
         
-        // Init the zoom level
-        let coordinate:CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 40.70, longitude: -73.99)
-        let span = MKCoordinateSpanMake(0.05, 0.05)
-        let region = MKCoordinateRegionMake(coordinate, span)
-        self.mapView.setRegion(region, animated: true)
+        if loggedInLastName != "" && loggedInFirstName != "" {
+            loggedInName.text = "\(loggedInFirstName) \(loggedInLastName)"
+        }
+
+       // from Current Location tutorial: https://www.veasoftware.com/tutorials/2015/5/12/current-location-in-swift-xcode-63-ios-83-tutorial
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startUpdatingLocation()
+        
+        self.mapView.delegate = self
+        if locationManager.location != nil {
+            let region = MKCoordinateRegionMakeWithDistance(locationManager.location!.coordinate, 5000, 5000)
+            mapView.setRegion(region, animated: true)
+            let userLocationCoordinates = CLLocationCoordinate2DMake(locationManager.location!.coordinate.latitude, locationManager.location!.coordinate.longitude)
+            let pinForUserLocation = MKPointAnnotation()
+            pinForUserLocation.coordinate = userLocationCoordinates
+            mapView.addAnnotation(pinForUserLocation)
+            mapView.showAnnotations([pinForUserLocation], animated: true)
+        }
+        
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -55,6 +66,7 @@ class SubmitInfoViewController : UIViewController {
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -63,42 +75,65 @@ class SubmitInfoViewController : UIViewController {
     }
     
     
-    @IBAction func searchButtonClick(sender: AnyObject) {
-        //1
-        if self.mapView.annotations.count != 0{
-            annotation = self.mapView.annotations[0]
-            self.mapView.removeAnnotation(annotation)
-        }
-        //2
-        localSearchRequest = MKLocalSearchRequest()
-        localSearchRequest.naturalLanguageQuery = self.locationString.text
-        localSearch = MKLocalSearch(request: localSearchRequest)
-        localSearch.startWithCompletionHandler { (localSearchResponse, error) -> Void in
-            
-            if localSearchResponse == nil{
-                let alertController = UIAlertController(title: nil, message: "Place Not Found", preferredStyle: UIAlertControllerStyle.Alert)
-                alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-                self.presentViewController(alertController, animated: true, completion: nil)
+    func locationManager(manager: CLLocationManager, didUpdateLocations location: [CLLocation]){
+        CLGeocoder().reverseGeocodeLocation(manager.location!, completionHandler: {(placemarks, error)->Void in
+            if error != nil {
+                self.alertView("Your location was not found.", message: "")
+                print(error)
                 return
             }
-            //3
-            self.pointAnnotation = MKPointAnnotation()
-            self.pointAnnotation.title = self.locationString.text
-            self.pointAnnotation.coordinate = CLLocationCoordinate2D(latitude: localSearchResponse!.boundingRegion.center.latitude, longitude:     localSearchResponse!.boundingRegion.center.longitude)
-            
-            
-            self.pinAnnotationView = MKPinAnnotationView(annotation: self.pointAnnotation, reuseIdentifier: nil)
-            self.mapView.centerCoordinate = self.pointAnnotation.coordinate
-            self.mapView.addAnnotation(self.pinAnnotationView.annotation!)
+            if placemarks!.count > 0 {
+                let pm = placemarks![0]
+                self.studyLocation = pm
+                self.displayLocationInfo(pm)
+                
+            }
+        })
+    }
+    
+    func displayLocationInfo (placemark: CLPlacemark) {
+        self.locationManager.stopUpdatingLocation()
+        locationString.text = "\(placemark.locality!), \(placemark.administrativeArea!)"
+        
+    }
+    
+    func locationManager(manager: CLLocationManager, didFailWithError error: NSError){
+        print("Error: " + error.localizedDescription)
+        alertView("Your location could not be found", message: "Please try again")
+    }
+    
+    @IBAction func findUserLocationAndDropPin(sender: UIButton) {
+        if locationString.text != "" {
+            getLocationFromString(locationString.text!)
+        } else {
+            alertView("Enter a place to add to the map", message: "")
         }
     }
     
-    @IBAction func browseButtonClick(sender: AnyObject) {
-        if webAddress.text == "" {
-            let alertController = UIAlertController(title: nil, message: "Enter a URL", preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
+    func getLocationFromString(locationText: String) {
+        CLGeocoder().geocodeAddressString(locationText, completionHandler: { (placemark, error) in
+            if error != nil {
+                self.alertView("There was a problem getting your place on the map", message: "")
+            }
+            if placemark != nil {
+                self.studyLocation = placemark![0]
+                let lat = (self.studyLocation.location?.coordinate.latitude)
+                let lng = (self.studyLocation.location?.coordinate.longitude)
+                let userLocationCoordinates = CLLocationCoordinate2DMake(lat!, lng!)
+                let pinForUserLocation = MKPointAnnotation()
+                pinForUserLocation.coordinate = userLocationCoordinates
+                self.mapView.addAnnotation(pinForUserLocation)
+                self.mapView.showAnnotations([pinForUserLocation], animated: true)
+                
+                let region = MKCoordinateRegionMakeWithDistance(userLocationCoordinates, 5000, 5000)
+                self.mapView.setRegion(region, animated: true)
+            }
+        })
+    }
 
+    @IBAction func verifyURL(sender: AnyObject) {
+        if webAddress.text == "" {
+            alertView("Enter a URL", message: "")
         }
         else {
             let app = UIApplication.sharedApplication()
@@ -106,31 +141,36 @@ class SubmitInfoViewController : UIViewController {
                 app.openURL(NSURL(string: webAddress.text!)!)
             }
             else {
-                let alertController = UIAlertController(title: nil, message: "Enter a Valid URL", preferredStyle: UIAlertControllerStyle.Alert)
-                alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-                self.presentViewController(alertController, animated: true, completion: nil)
+                alertView("Enter a Valid URL", message: "")
             }
         }
     }
     
     @IBAction func submitData(sender: AnyObject){
-        // Get the session and create a POST to Udacity
-        let string = locationString.text
-        udacityClient.latLonFromString(string!) {(result, error) in
-            
-            /* Convert locationString to lat/lon */
-            if let result = result as? NSDictionary {
-                self.lat = result["lat"] as! Double
-                self.lng = result["lng"] as! Double
-                
-                /* Send the input to Parse */
-                self.udacityClient.POSTMapData(self.firstName.text, second: self.lastName.text, mapString: self.locationString.text, webAddress: self.webAddress.text, latitude: self.lat, longitude: self.lng)
-
-                // Refresh the data
-                
-                self.refresh()
-            }
+        // Check that all fields are filled in
+        if studyLocation == nil {
+            alertView("Enter a place where you study", message: "")
+        } else if self.webAddress.text == "" {
+            alertView("Enter a favorite web address", message: "")
         }
+        // Get the session and create a POST to Udacity
+        var lat: CLLocationDegrees!
+        var lng: CLLocationDegrees!
+
+        if let _ = (self.studyLocation.location?.coordinate.latitude) {
+            lat = (self.studyLocation.location?.coordinate.latitude)
+        }
+        if let _ = (self.studyLocation.location?.coordinate.longitude) {
+            lng = (self.studyLocation.location?.coordinate.longitude)
+        }
+        
+        /* Send the input to Parse */
+        self.udacityClient.POSTMapData(loggedInFirstName, second: loggedInLastName, mapString: self.locationString.text, webAddress: self.webAddress.text, latitude: lat, longitude: lng)
+
+        
+        // Refresh the data
+        self.refresh()
+        
     }
     
     func refresh() {
@@ -140,7 +180,7 @@ class SubmitInfoViewController : UIViewController {
                 if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)
-                    self.appDelegate.mapData = locationsData
+                    mapData = locationsData
                 }
             })
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("NavigationController") 
@@ -151,4 +191,65 @@ class SubmitInfoViewController : UIViewController {
     @IBAction func cancel(sender: AnyObject) {
         dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    // Alert view
+    func alertView(title:String, message:String) {
+        dispatch_async(dispatch_get_main_queue(), {
+            self.shakeScreen()
+            let newController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            let okAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) {action in
+                newController.dismissViewControllerAnimated(true, completion: nil)
+            }
+            newController.addAction(okAction)
+            self.presentViewController(newController, animated: true, completion: nil)
+        })
+            
+    }
+    
+    // Shake screen on error
+    
+    func shakeScreen() {
+        
+        UIView.animateWithDuration(0.08, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x += 50
+            }, completion: { finished in
+                self.shakeScreenLeft()
+        })
+    }
+    
+    func shakeScreenLeft() {
+        
+        UIView.animateWithDuration(0.14, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x -= 100
+            }, completion: { finished in
+                self.shakeScreenRightAgain()
+        })
+    }
+    
+    func shakeScreenRightAgain() {
+        
+        UIView.animateWithDuration(0.14, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x += 80
+            }, completion: { finished in
+                self.shakeScreenLeftAgain()
+        })
+    }
+    
+    func shakeScreenLeftAgain() {
+        
+        UIView.animateWithDuration(0.14, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x -= 80
+            }, completion: { finished in
+                self.shakeScreenCenter()
+        })
+    }
+    
+    func shakeScreenCenter() {
+        
+        UIView.animateWithDuration(0.08, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x += 50
+            }, completion: nil)
+    }
+    
+
 }

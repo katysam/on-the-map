@@ -7,14 +7,18 @@
 //
 
 import UIKit
+import FBSDKCoreKit
+import FBSDKLoginKit
 
 class LoginViewController: UIViewController {
     
     var udacityClient = UdacityClient()
+    var studentLocationData = StudentLocationData()
 
     
     var appDelegate: AppDelegate!
     var session: NSURLSession!
+    let loginDelegate = FBLoginButtonDelegate()
 
     @IBOutlet weak var username: UITextField!
     @IBOutlet weak var password: UITextField!
@@ -22,16 +26,18 @@ class LoginViewController: UIViewController {
 
     @IBOutlet weak var udacityLogo: UIImageView!
     @IBOutlet weak var debugTextLabel: UILabel!
+    @IBOutlet weak var FBButton: FBSDKLoginButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
+    @IBOutlet var wholeScreen: UIView!
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-//        self.subscribeToKeyboardNotifications()
 
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-//        self.unsubscribeFromKeyboardNotifications()
     }
         
         
@@ -41,20 +47,26 @@ class LoginViewController: UIViewController {
         /* Get the app delegate */
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         
-        
+        FBSDKLoginButton()
+        self.FBButton.delegate = loginDelegate
+        activityIndicator.hidden = true
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
     @IBAction func loginViaUdacity(sender: UIButton) {
+        self.username.resignFirstResponder()
+        self.password.resignFirstResponder()
+        activityIndicator.hidden = false
+        view.alpha = 0.9
         if username.text == "" {
-            alertView("Login failure", message:"Please enter a username.")
+            alertView("Please enter a username", message:"")
         } else {
             if password.text == "" {
-                alertView("Login failure", message:"Please enter a password")
+                alertView("Please enter a password", message:"")
             }else {
                 udacityClient.createSession(username.text, password: password.text) { (success, errorString) in
                     if success {
@@ -75,64 +87,87 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginViaFacebook(sender: AnyObject) {
-   
+//        completeLogin()
     }
     
     func completeLogin() {
+        var locationsData:[StudentLocation]!
         dispatch_async(dispatch_get_main_queue(), {
-            var locationsData:[StudentLocation]!
             self.udacityClient.GETMapData({ (result, error) -> Void in
-                if result != nil {
+                if error != nil {
+                    self.alertView("Data not available", message: "There was a problem retrieving the map data")
+                } else if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)
-                    if locationsData != nil {
-                        self.appDelegate.mapData = locationsData
-                    }
+                    mapData = locationsData
+                    let controller = self.storyboard!.instantiateViewControllerWithIdentifier("NavigationController")
+                    self.presentViewController(controller, animated: true, completion: nil)
                 }
             })
-            let controller = self.storyboard!.instantiateViewControllerWithIdentifier("NavigationController") 
-            self.presentViewController(controller, animated: true, completion: nil)
         })
     }
-    
-    // Alert view 
+        
+    // Alert view
     func alertView(title:String, message:String) {
-        let newController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        let okAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) {action in self.dismissViewControllerAnimated(true, completion: nil)}
-        newController.addAction(okAction)
-        self.presentViewController(newController, animated: true, completion: nil)
+        dispatch_async(dispatch_get_main_queue(), {
+            self.activityIndicator.hidden = true
+            self.view.alpha = 1.0
+            self.shakeScreen()
+            let newController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            let okAction = UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default) {action in self.dismissViewControllerAnimated(true, completion: nil)}
+            newController.addAction(okAction)
+            self.presentViewController(newController, animated: true, completion: nil)
+        })
         
     }
 
 
-    // Move the screen up when typing
-    func subscribeToKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:"    , name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:"    , name: UIKeyboardWillHideNotification, object: nil)
+    
+    // Shake screen on error
+    
+    func shakeScreen() {
+        
+        UIView.animateWithDuration(0.08, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x += 50
+            }, completion: { finished in
+                self.shakeScreenLeft()
+        })
     }
     
-    func unsubscribeFromKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+    func shakeScreenLeft() {
+        
+        UIView.animateWithDuration(0.14, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x -= 100
+            }, completion: { finished in
+                self.shakeScreenRightAgain()
+        })
     }
     
-    func keyboardWillShow(notification: NSNotification) {
-        udacityLogo.hidden = true
-        view.frame.origin.y -= getKeyboardHeight(notification)
-
+    func shakeScreenRightAgain() {
+        
+        UIView.animateWithDuration(0.14, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x += 80
+            }, completion: { finished in
+                self.shakeScreenLeftAgain()
+        })
     }
     
-    func keyboardWillHide(notification: NSNotification) {
-         udacityLogo.hidden = false
-        view.frame.origin.y = 0
+    func shakeScreenLeftAgain() {
+        
+        UIView.animateWithDuration(0.14, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x -= 80
+            }, completion: { finished in
+                self.shakeScreenCenter()
+        })
     }
     
-    func getKeyboardHeight(notification: NSNotification) -> CGFloat {
-        let userInfo = notification.userInfo
-        let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue // of CGRect
-        return keyboardSize.CGRectValue().height
+    func shakeScreenCenter() {
+        
+        UIView.animateWithDuration(0.08, delay: 0.0, options: .CurveEaseOut, animations: {
+            self.view.frame.origin.x += 50
+            }, completion: nil)
     }
-
+    
 
 }
 
