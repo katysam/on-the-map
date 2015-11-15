@@ -18,6 +18,7 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
     var appDelegate = AppDelegate()
     var studentLocationData = StudentLocationData()
 
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet var mainView: UIView!
     var firstNameEntry: String!
     var lastNameEntry: String!
@@ -103,10 +104,13 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
     }
     
     @IBAction func findUserLocationAndDropPin(sender: UIButton) {
+        activityIndicator.hidden = false
         if locationString.text != "" {
             getLocationFromString(locationString.text!)
+            activityIndicator.hidden = true
         } else {
             alertView("Enter a place to add to the map", message: "")
+            activityIndicator.hidden = true
         }
     }
     

@@ -369,6 +369,10 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="1FP-CB-2Ls">
+                                <rect key="frame" x="290" y="440" width="20" height="20"/>
+                                <animations/>
+                            </activityIndicatorView>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" red="1" green="0.60079088089999999" blue="0.3826361023" alpha="1" colorSpace="calibratedRGB"/>
@@ -381,6 +385,7 @@
                             <constraint firstItem="juR-wU-EEL" firstAttribute="leading" secondItem="crs-RL-pQQ" secondAttribute="leadingMargin" constant="34" id="5cC-m8-J0C"/>
                             <constraint firstItem="svQ-Td-0t4" firstAttribute="leading" secondItem="crs-RL-pQQ" secondAttribute="leadingMargin" constant="30" id="AXh-mM-OBL"/>
                             <constraint firstItem="3zp-Td-KdM" firstAttribute="top" secondItem="XYs-jn-Zqa" secondAttribute="bottom" constant="7" id="AvP-8h-zvz"/>
+                            <constraint firstItem="1FP-CB-2Ls" firstAttribute="centerX" secondItem="iup-ly-iUE" secondAttribute="centerX" id="BDu-fw-Gx2"/>
                             <constraint firstItem="JbY-kH-7r9" firstAttribute="top" secondItem="svQ-Td-0t4" secondAttribute="bottom" constant="18" id="CiJ-EF-27h"/>
                             <constraint firstAttribute="trailingMargin" secondItem="1x9-aZ-4gG" secondAttribute="trailing" constant="33" id="Crd-Lt-hhx"/>
                             <constraint firstItem="juR-wU-EEL" firstAttribute="top" secondItem="JbY-kH-7r9" secondAttribute="bottom" constant="29" id="D2P-qJ-t5M"/>
@@ -392,6 +397,7 @@
                             <constraint firstItem="svQ-Td-0t4" firstAttribute="leading" secondItem="crs-RL-pQQ" secondAttribute="leadingMargin" constant="34" id="Wuf-fn-vwh"/>
                             <constraint firstItem="1x9-aZ-4gG" firstAttribute="leading" secondItem="crs-RL-pQQ" secondAttribute="leadingMargin" constant="34" id="XxI-qC-ADj"/>
                             <constraint firstItem="guB-FW-OA4" firstAttribute="top" secondItem="iup-ly-iUE" secondAttribute="bottom" id="YQr-K1-xKy"/>
+                            <constraint firstItem="1FP-CB-2Ls" firstAttribute="centerY" secondItem="iup-ly-iUE" secondAttribute="centerY" id="a6l-iz-de6"/>
                             <constraint firstItem="guB-FW-OA4" firstAttribute="top" secondItem="WBJ-W9-2GC" secondAttribute="bottom" constant="140" id="b3f-Pv-YFQ"/>
                             <constraint firstItem="tCx-lg-4ya" firstAttribute="top" secondItem="WBJ-W9-2GC" secondAttribute="bottom" id="daA-cZ-m81"/>
                             <constraint firstItem="WBJ-W9-2GC" firstAttribute="top" secondItem="1x9-aZ-4gG" secondAttribute="bottom" constant="15" id="h1f-3u-Hos"/>
@@ -429,6 +435,7 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Add" id="Nq4-v1-tWW"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="1FP-CB-2Ls" id="3B5-UD-xfp"/>
                         <outlet property="cancelButton" destination="tCx-lg-4ya" id="mTN-pQ-SV5"/>
                         <outlet property="locationString" destination="juR-wU-EEL" id="uj0-5s-XfI"/>
                         <outlet property="loggedInName" destination="JbY-kH-7r9" id="8sC-A3-40D"/>
