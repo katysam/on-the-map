@@ -67,7 +67,7 @@
                                     <action selector="joinUdacity:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="aaC-gj-NBt"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h2d-IL-CuP" customClass="FBSDKLoginButton">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h2d-IL-CuP" customClass="FBSDKLoginButton">
                                 <rect key="frame" x="32" y="507" width="540" height="34"/>
                                 <animations/>
                                 <state key="normal" title="Button"/>
