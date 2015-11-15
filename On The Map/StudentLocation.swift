@@ -62,7 +62,7 @@ class StudentLocationData {
 
 var mapData: [StudentLocation]!
 
-var loggedInAs = "geek"
+var loggedInAs = ""
 var loggedInLastName = ""
 var loggedInFirstName = ""
 

@@ -47,6 +47,7 @@ class UdacityClient : NSObject {
                     
                     let newData = data!.subdataWithRange(NSMakeRange(5, data!.length - 5)) /* subset response data! */
                     var parsingError: NSError? = nil
+                    
                     let parsedResult = (try! NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
                 
                     if let udacityAccount = parsedResult["account"] as? NSDictionary {
@@ -55,7 +56,6 @@ class UdacityClient : NSObject {
                         } else {
                             if let udacityKey = udacityAccount.valueForKey("key"){
                                 loggedInAs = udacityKey as! String
-                                print(loggedInAs)
                                 // convert udacityKey to String
                                 let udacityKeyString = String(udacityKey)
                                 self.queryMapData(udacityKeyString)
@@ -101,7 +101,6 @@ class UdacityClient : NSObject {
                 return
             }
             let newData = data!.subdataWithRange(NSMakeRange(5, data!.length - 5)) /* subset response data! */
-//            println(NSString(data: newData, encoding: NSUTF8StringEncoding))
         }
         task.resume()
 
@@ -169,7 +168,6 @@ class UdacityClient : NSObject {
     
     // MARK: - GET Public User Data
     func queryMapData(udacityKey: String) {
-//        dispatch_async(dispatch_get_main_queue(), {
             let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/users/\(udacityKey)")!)
             let session = NSURLSession.sharedSession()
             let task = session.dataTaskWithRequest(request) { data, response, error in
@@ -184,50 +182,13 @@ class UdacityClient : NSObject {
                     // set properties for what is known
                     let last = studentInfo.valueForKey("last_name")
                     loggedInLastName = last as! String
-                    print(loggedInLastName)
                     let first = studentInfo.valueForKey("first_name")
                     loggedInFirstName = first as! String
                 }
             }
             task.resume()
-//        })
 
     }
-    
-//    // MARK: - Query the Parse data
-//    func queryMapData(udacityKey: Int, completionHandler: (result: AnyObject!, error: NSError?) -> NSArray) -> NSURLSessionDataTask {
-//        let urlString = "https://api.parse.com/1/classes/StudentLocation?where=%7B%22uniqueKey%22%3A%22\(udacityKey)%22%7D"
-//        let url = NSURL(string: urlString)
-//        let request = NSMutableURLRequest(URL: url!)
-//        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
-//        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
-//        let session = NSURLSession.sharedSession()
-//        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
-//            if let error = downloadError {
-//                print(downloadError)
-//                completionHandler(result: nil, error: error)
-//            } else {
-//                
-//                /* 5. Parse the data */
-//                var parsingError: NSError? = nil
-//                let parsedResult = (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
-//                print(parsedResult)
-//                /* 6. Use the data! */
-//                if let results = parsedResult["results"] {
-//                    completionHandler(result: results, error: nil)
-//                } else {
-//                    print("Could not find result in \(parsedResult)")
-//                }
-//                
-//            }
-//            
-//        }
-//        
-//        /* 7. Continue  */
-//        task.resume()
-//        return task
-//        
-//    }
     
 
     // MARK: - Helpers
@@ -242,25 +203,25 @@ class UdacityClient : NSObject {
     }
     
     
-//    /* Helper: Given raw JSON, return a usable Foundation object */
-//    func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
-//        
-//        var parsingError: NSError? = nil
-//        
-//        let parsedResult: AnyObject?
-//        do {
-//            parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
-//        } catch let error as NSError {
-//            parsingError = error
-//            parsedResult = nil
-//        }
-//        
-//        if let error = parsingError {
-//            completionHandler(result: nil, error: error)
-//        } else {
-//            completionHandler(result: parsedResult, error: nil)
-//        }
-//    }
+    /* Helper: Given raw JSON, return a usable Foundation object */
+    func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+        
+        var parsingError: NSError? = nil
+        
+        let parsedResult: AnyObject?
+        do {
+            parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
+        } catch let error as NSError {
+            parsingError = error
+            parsedResult = nil
+        }
+        
+        if let error = parsingError {
+            completionHandler(result: nil, error: error)
+        } else {
+            completionHandler(result: parsedResult, error: nil)
+        }
+    }
     
     
     /* Helper function: Given a dictionary of parameters, convert to a string for a url */

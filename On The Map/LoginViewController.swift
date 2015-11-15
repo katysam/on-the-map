@@ -14,7 +14,6 @@ class LoginViewController: UIViewController {
     
     var udacityClient = UdacityClient()
     var studentLocationData = StudentLocationData()
-
     
     var appDelegate: AppDelegate!
     var session: NSURLSession!
@@ -32,6 +31,8 @@ class LoginViewController: UIViewController {
     @IBOutlet var wholeScreen: UIView!
 
     override func viewWillAppear(animated: Bool) {
+        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("NavigationController")
+
         super.viewWillAppear(animated)
 
     }
@@ -88,6 +89,7 @@ class LoginViewController: UIViewController {
     
     @IBAction func loginViaFacebook(sender: AnyObject) {
 //        completeLogin()
+        print("I am logging in via Facebook")
     }
     
     func completeLogin() {
@@ -100,11 +102,13 @@ class LoginViewController: UIViewController {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)
                     mapData = locationsData
+
                     let controller = self.storyboard!.instantiateViewControllerWithIdentifier("NavigationController")
                     self.presentViewController(controller, animated: true, completion: nil)
                 }
             })
         })
+
     }
         
     // Alert view

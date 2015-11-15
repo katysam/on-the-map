@@ -35,6 +35,12 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
+        if mapData == nil {
+            let controller = storyboard!.instantiateViewControllerWithIdentifier("LoginView")
+            self.presentViewController(controller, animated: true, completion: nil)
+            
+        }
+        
         dispatch_async(dispatch_get_main_queue(), {
 
             self.locations = mapData

@@ -32,7 +32,8 @@ class FacebookClient {
                 let parsedResult = (try! NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
                 let udacityAccountInfo = parsedResult["account"]
                 if let udacityAccountKey = udacityAccountInfo!["key"]! {
-                    print(udacityAccountKey)
+                    loggedInAs = udacityAccountKey as! String
+                    print("I am logged in as: \(loggedInAs)")
                     self.loginViewController.completeLogin()
                } else {
                     parsingError = error

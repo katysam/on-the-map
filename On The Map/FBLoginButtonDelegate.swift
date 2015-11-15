@@ -27,17 +27,24 @@ class FBLoginButtonDelegate: NSObject, FBSDKLoginButtonDelegate {
         
         
         } else {
-            let accessToken = FBSDKAccessToken.currentAccessToken().tokenString
-            facebookClient.createSession(accessToken) {(success, errorString) in
-                if success {
-                     //do something
-                    let controller = loginViewController.storyboard!.instantiateViewControllerWithIdentifier("NavigationController")
-                    loginViewController.presentViewController(controller, animated: true, completion: nil)
+            if let accessToken = FBSDKAccessToken.currentAccessToken().tokenString {
+                print(accessToken)
+                facebookClient.createSession(accessToken) {(success, errorString) in
+                    if success {
+                         //do something
+                        
+                        print("Successfully logged in with Facebook")
+                        
+    //                    let controller = loginViewController.storyboard!.instantiateViewControllerWithIdentifier("NavigationController")
+    //                    loginViewController.presentViewController(controller, animated: true, completion: nil)
 
-                } else {
-                    //TODO: create an alert with errorString as the message
-                    print(errorString)
+                    } else {
+                        //TODO: create an alert with errorString as the message
+                        print(errorString)
+                    }
                 }
+            } else {
+                print("failed to log in with Facebook")
             }
         }
     }
