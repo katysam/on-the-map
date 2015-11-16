@@ -94,7 +94,7 @@ class LoginViewController: UIViewController {
     func completeLogin() {
         var locationsData:[StudentLocation]!
         dispatch_async(dispatch_get_main_queue(), {
-            self.udacityClient.GETMapData({ (result, error) -> Void in
+            self.udacityClient.getMapData({ (result, error) -> Void in
                 if error != nil {
                     self.alertView("Data not available", message: "There was a problem retrieving the map data")
                 } else if result != nil {

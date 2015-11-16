@@ -10,13 +10,13 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
+class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UITextFieldDelegate {
     
     let locationManager = CLLocationManager()
+    var studyLocation: CLPlacemark!
     
     var udacityClient = UdacityClient()
     var appDelegate = AppDelegate()
-    var studentLocationData = StudentLocationData()
 
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet var mainView: UIView!
@@ -29,10 +29,12 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var mapView: MKMapView!
 
-    var studyLocation: CLPlacemark!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        locationString.delegate = self
+        webAddress.delegate = self
+
         
         /* Get the app delegate */
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -73,6 +75,12 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        
+        return true;
     }
     
     
@@ -169,18 +177,24 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
         }
         
         /* Send the input to Parse */
-        self.udacityClient.POSTMapData(loggedInFirstName, second: loggedInLastName, mapString: self.locationString.text, webAddress: self.webAddress.text, latitude: lat, longitude: lng)
-
+        self.udacityClient.postMapData(self.locationString.text, webAddress: self.webAddress.text, latitude: lat, longitude: lng) { (success, errorString) in
+            if errorString != nil {
+                self.alertView(errorString!, message: "")
+            }
+            if success {
+                // Refresh the data
+                self.refresh()
+                
+            }
+        }
         
-        // Refresh the data
-        self.refresh()
         
     }
     
     func refresh() {
         dispatch_async(dispatch_get_main_queue(), {
             var locationsData:[StudentLocation]!
-            self.udacityClient.GETMapData({ (result, error) -> Void in
+            self.udacityClient.getMapData({ (result, error) -> Void in
                 if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)

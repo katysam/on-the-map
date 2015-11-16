@@ -37,13 +37,13 @@
                                 <rect key="frame" x="28" y="254" width="544" height="30"/>
                                 <animations/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES"/>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9Cb-44-WcR">
                                 <rect key="frame" x="28" y="292" width="544" height="30"/>
                                 <animations/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bgO-tZ-kfy">
                                 <rect key="frame" x="28" y="355" width="544" height="29"/>
@@ -356,12 +356,6 @@
                                     <action selector="verifyURL:" destination="Blk-x7-7Yo" eventType="touchUpInside" id="u7t-02-eTN"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Share a favorite web address" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1x9-aZ-4gG">
-                                <rect key="frame" x="50" y="195" width="470" height="30"/>
-                                <animations/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Logged In Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JbY-kH-7r9">
                                 <rect key="frame" x="50" y="78" width="501" height="50"/>
                                 <animations/>
@@ -373,6 +367,12 @@
                                 <rect key="frame" x="290" y="440" width="20" height="20"/>
                                 <animations/>
                             </activityIndicatorView>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Share a favorite web address" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1x9-aZ-4gG">
+                                <rect key="frame" x="50" y="195" width="470" height="30"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" red="1" green="0.60079088089999999" blue="0.3826361023" alpha="1" colorSpace="calibratedRGB"/>

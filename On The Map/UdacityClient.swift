@@ -12,7 +12,6 @@ import Foundation
 class UdacityClient : NSObject {
     
     var appDelegate: AppDelegate!
-    var studentLocationData = StudentLocationData()
     
     /* Shared session */
     var session: NSURLSession
@@ -20,7 +19,9 @@ class UdacityClient : NSObject {
     var udacityID: String!
     var lastName: String!
     var firstName: String!
-
+    
+    var parseApplicationId = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
+    var restApiKey = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
     
     override init() {
         session = NSURLSession.sharedSession()
@@ -29,7 +30,6 @@ class UdacityClient : NSObject {
 
         super.init()
     }
-
     
     func createSession(username:String!, password:String!, completionHandler: (success: Bool, errorString: String?) -> Void){
         dispatch_async(dispatch_get_main_queue(), {
@@ -81,7 +81,6 @@ class UdacityClient : NSObject {
             }
             task.resume()
         })
-
     }
     
     func endSession() {
@@ -108,21 +107,17 @@ class UdacityClient : NSObject {
     
     // MARK: - GET
     
-    func GETMapData(completionHandler: (result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionDataTask {
-        
-        let Parse_Application_ID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
-        let REST_API_Key = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
-        
+    func getMapData(completionHandler: (result: AnyObject!, error: String?) -> Void) -> NSURLSessionDataTask {
         
         let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
-        request.addValue(Parse_Application_ID, forHTTPHeaderField: "X-Parse-Application-Id")
-        request.addValue(REST_API_Key, forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue(parseApplicationId, forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue(restApiKey, forHTTPHeaderField: "X-Parse-REST-API-Key")
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { data, response, downloadError in
             
             if let error = downloadError {
                 print(downloadError)
-                completionHandler(result: nil, error: error)
+                completionHandler(result: nil, error: "error")
             } else {
                 
                 /* 5. Parse the data */
@@ -133,7 +128,7 @@ class UdacityClient : NSObject {
                 if let results = parsedResult["results"] {
                     completionHandler(result: results, error: nil)
                 } else {
-                    print("Could not find result in \(parsedResult)")
+                    completionHandler(result: nil, error: "error")
                 }
                 
             }
@@ -145,20 +140,26 @@ class UdacityClient : NSObject {
     
     // MARK: - POST
     
-    func POSTMapData (first: String!, second: String!, mapString: String!, webAddress: String!, latitude: Double!, longitude: Double!) {
+    func postMapData (mapString: String!, webAddress: String!, latitude: Double!, longitude: Double!, completionHandler: (success: Bool, errorString: String?) -> Void) {
         let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
         request.HTTPMethod = "POST"
-        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
-        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue(parseApplicationId, forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue(restApiKey, forHTTPHeaderField: "X-Parse-REST-API-Key")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPBody = "{\"uniqueKey\": \"kathrynsamalin@gmail.com\", \"firstName\": \"\(first)\", \"lastName\": \"\(second)\",\"mapString\": \"\(mapString)\", \"mediaURL\": \"\(webAddress)\",\"latitude\": \(latitude), \"longitude\": \(longitude)}".dataUsingEncoding(NSUTF8StringEncoding)
+        request.HTTPBody = "{\"uniqueKey\": \"\(udacityID)\", \"firstName\": \"\(loggedInFirstName)\", \"lastName\": \"\(loggedInLastName)\",\"mapString\": \"\(mapString)\", \"mediaURL\": \"\(webAddress)\",\"latitude\": \(latitude), \"longitude\": \(longitude)}".dataUsingEncoding(NSUTF8StringEncoding)
         
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { data, response, error in
-            if let error = error {
-                print("error is: \(error)")
+            if error != nil {
+                completionHandler(success: false, errorString: "Your data did not post. Please try again.")
             } else {
-                let parsedData = (NSString(data: data!, encoding: NSUTF8StringEncoding))
+                let parsedData =  (try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
+                if let message = (parsedData.valueForKey("error")) {
+                    completionHandler(success: false, errorString: "There was a problem posting your info to the map.")
+                    return
+                }
+                completionHandler(success: true, errorString: nil)
+
             }
             
         }
@@ -168,25 +169,25 @@ class UdacityClient : NSObject {
     
     // MARK: - GET Public User Data
     func queryMapData(udacityKey: String) {
-            let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/users/\(udacityKey)")!)
-            let session = NSURLSession.sharedSession()
-            let task = session.dataTaskWithRequest(request) { data, response, error in
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/users/\(udacityKey)")!)
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { data, response, error in
 
-                if error != nil { // Handle error...
-                    return
-                }
-                let newData = data!.subdataWithRange(NSMakeRange(5, data!.length - 5)) /* subset response data! */
-                let parsedResult = (try! NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
-                if let studentInfo = parsedResult.valueForKey("user") {
-                    
-                    // set properties for what is known
-                    let last = studentInfo.valueForKey("last_name")
-                    loggedInLastName = last as! String
-                    let first = studentInfo.valueForKey("first_name")
-                    loggedInFirstName = first as! String
-                }
+            if error != nil { // Handle error...
+                return
             }
-            task.resume()
+            let newData = data!.subdataWithRange(NSMakeRange(5, data!.length - 5)) /* subset response data! */
+            let parsedResult = (try! NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments)) as! NSDictionary
+            if let studentInfo = parsedResult.valueForKey("user") {
+                
+                // set properties for what is known
+                let last = studentInfo.valueForKey("last_name")
+                loggedInLastName = last as! String
+                let first = studentInfo.valueForKey("first_name")
+                loggedInFirstName = first as! String
+            }
+        }
+        task.resume()
 
     }
     

@@ -89,7 +89,7 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
     func refresh() {
         dispatch_async(dispatch_get_main_queue(), {
             var locationsData:[StudentLocation]!
-            self.udacityClient.GETMapData({ (result, error) -> Void in
+            self.udacityClient.getMapData({ (result, error) -> Void in
                 if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)

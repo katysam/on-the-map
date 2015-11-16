@@ -147,7 +147,7 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
     
     func refresh() {
         var locationsData:[StudentLocation]!
-            self.udacityClient.GETMapData({ (result, error) -> Void in
+            self.udacityClient.getMapData({ (result, error) -> Void in
                 if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)
