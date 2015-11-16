@@ -18,8 +18,6 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
     var appDelegate = AppDelegate()
     var delegate: MapViewControllerDelegate?
     var udacityClient = UdacityClient()
-    var studentLocationData = StudentLocationData()
-    var locations: [StudentLocation]!
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -42,20 +40,14 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
         }
         
         dispatch_async(dispatch_get_main_queue(), {
-
-            self.locations = mapData
             
-            // We will create an MKPointAnnotation for each dictionary in "locations". The
+            // We will create an MKPointAnnotation for each dictionary in "mapData". The
             // point annotations will be stored in this array, and then provided to the map view.
             var annotations = [MKPointAnnotation]()
             
-            // The "locations" array is loaded with the sample data below. We are using the dictionaries
-            // to create map annotations. This would be more stylish if the dictionaries were being
-            // used to create custom structs. Perhaps StudentLocation structs.
-            
-            if self.locations != nil {
+            if mapData != nil {
                 
-                for dictionary in self.locations {
+                for dictionary in mapData {
                     
                     // Notice that the float values are being used to create CLLocationDegree values.
                     // This is a version of the Double type.println
@@ -80,7 +72,7 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
                 }
                 
             } else {
-                print("there are no locations available")
+                self.alertView("There are no locations available", message: "Click Refresh")
             }
             
             // When the array is complete, we add the annotations to the map.
@@ -101,9 +93,8 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
     
     // MARK: - MKMapViewDelegate
     
-    // Here we create a view with a "right callout accessory view". You might choose to look into other
-    // decoration alternatives. Notice the similarity between this method and the cellForRowAtIndexPath
-    // method in TableViewDataSource.
+    // Here we create a view with a "right callout accessory view". 
+    
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView! {
 
         let reuseId = "pin"

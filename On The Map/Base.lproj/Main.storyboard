@@ -67,15 +67,15 @@
                                     <action selector="joinUdacity:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="aaC-gj-NBt"/>
                                 </connections>
                             </button>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="aKX-S3-QB3">
+                                <rect key="frame" x="290" y="290" width="20" height="20"/>
+                                <animations/>
+                            </activityIndicatorView>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h2d-IL-CuP" customClass="FBSDKLoginButton">
                                 <rect key="frame" x="32" y="507" width="540" height="34"/>
                                 <animations/>
                                 <state key="normal" title="Button"/>
                             </button>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="aKX-S3-QB3">
-                                <rect key="frame" x="290" y="290" width="20" height="20"/>
-                                <animations/>
-                            </activityIndicatorView>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" red="1" green="0.59831079799999998" blue="0.3325888595" alpha="1" colorSpace="calibratedRGB"/>
@@ -528,6 +528,6 @@
         <image name="pin.pdf" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="0lb-2I-8E5"/>
+        <segue reference="m7O-nu-C1S"/>
     </inferredMetricsTieBreakers>
 </document>

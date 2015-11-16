@@ -13,7 +13,6 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
     var udacityClient = UdacityClient()
     var appDelegate = AppDelegate()
     var studentLocationData = StudentLocationData()
-    var locations: [StudentLocation]!
     
     @IBOutlet weak var listStudentLocations: UITableView!
     
@@ -23,7 +22,6 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
         /* Get the app delegate */
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 
-        locations = mapData
         
     }
 
@@ -45,7 +43,7 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
         
         /* Get cell type */
         let cellReuseIdentifier = "StudentLocationTableViewCell"
-        let location = self.locations[indexPath.row]
+        let location = mapData[indexPath.row]
         let cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as UITableViewCell!
         
         /* Set cell defaults */
@@ -60,8 +58,8 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if locations != nil {
-            return locations.count
+        if mapData != nil {
+            return mapData.count
         } else {
             return 4
         }
@@ -70,7 +68,7 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let app = UIApplication.sharedApplication()
-        let location = locations[indexPath.row]
+        let location = mapData[indexPath.row]
         app.openURL(NSURL(string: location.mediaURL)!)
 
     }

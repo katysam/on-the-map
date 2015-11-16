@@ -50,21 +50,5 @@ class FacebookClient {
 
     }
     
-//    func completeLogin() {
-//        dispatch_async(dispatch_get_main_queue(), {
-//            var locationsData:[StudentLocation]!
-//            self.udacityClient.GETMapData({ (result, error) -> Void in
-//                if result != nil {
-//                    let resultArray = result as! [[String: AnyObject]]
-//                    locationsData = StudentLocation.locationsFromResults(resultArray)
-//                    if locationsData != nil {
-//                        self.appDelegate.mapData = locationsData
-//                    }
-//                }
-//            })
-//            let controller = loginViewController.storyboard!.instantiateViewControllerWithIdentifier("NavigationController")
-//            loginViewController.presentViewController(controller, animated: true, completion: nil)
-//        })
-//    }
 
 }

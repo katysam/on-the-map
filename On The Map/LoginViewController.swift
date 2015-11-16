@@ -13,7 +13,6 @@ import FBSDKLoginKit
 class LoginViewController: UIViewController {
     
     var udacityClient = UdacityClient()
-    var studentLocationData = StudentLocationData()
     
     var appDelegate: AppDelegate!
     var session: NSURLSession!
