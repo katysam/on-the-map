@@ -198,8 +198,8 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
                 if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)
-                    // SORT data by createdAt
-                    locationsData.sortInPlace({$0.createdAt > $1.createdAt })
+                    // SORT data by updatedAt
+                    locationsData.sortInPlace({$0.updatedAt > $1.updatedAt })
                     // TRIM data to 100 entries
                     if locationsData.count > 100 {
                         let tempLocationsData = locationsData[0...99]

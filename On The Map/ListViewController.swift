@@ -49,7 +49,7 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
         /* Set cell defaults */
         let fullName = "\(location.firstName) \(location.lastName)"
         cell.textLabel!.text = fullName
-        let longDate = location.createdAt
+        let longDate = location.updatedAt
         let shortDate = longDate.substringToIndex(longDate.startIndex.advancedBy(10))
         let placePlusURL = "\(shortDate)  -  \(location.mapString)  -  \(location.mediaURL)"
         cell.detailTextLabel?.text = placePlusURL
@@ -93,8 +93,8 @@ class ListViewController : UIViewController, UITableViewDelegate, UITableViewDat
                 if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)
-                    // SORT data by createdAt
-                    locationsData.sortInPlace({$0.createdAt > $1.createdAt })
+                    // SORT data by updatedAt
+                    locationsData.sortInPlace({$0.updatedAt > $1.updatedAt })
                     // TRIM data to 100 entries
                     if locationsData.count > 100 {
                         let tempLocationsData = locationsData[0...99]
