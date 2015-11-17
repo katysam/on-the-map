@@ -116,7 +116,6 @@ class UdacityClient : NSObject {
         let task = session.dataTaskWithRequest(request) { data, response, downloadError in
             
             if let error = downloadError {
-                print(downloadError)
                 completionHandler(result: nil, error: "error")
             } else {
                 

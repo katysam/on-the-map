@@ -100,6 +100,18 @@ class LoginViewController: UIViewController {
                 } else if result != nil {
                     let resultArray = result as! [[String: AnyObject]]
                     locationsData = StudentLocation.locationsFromResults(resultArray)
+                    // SORT data by createdAt
+                    locationsData.sortInPlace({$0.createdAt > $1.createdAt })
+                    // TRIM data to 100 entries
+                    if locationsData.count > 100 {
+                        let tempLocationsData = locationsData[0...99]
+                        var newLocationsData = [StudentLocation]()
+                        for i in tempLocationsData {
+                            newLocationsData.append(i)
+                        }
+                        locationsData = newLocationsData
+                    }
+                    
                     mapData = locationsData
 
                     let controller = self.storyboard!.instantiateViewControllerWithIdentifier("NavigationController")
@@ -109,7 +121,7 @@ class LoginViewController: UIViewController {
         })
 
     }
-        
+    
     // Alert view
     func alertView(title:String, message:String) {
         dispatch_async(dispatch_get_main_queue(), {
