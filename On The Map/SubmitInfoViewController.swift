@@ -112,19 +112,20 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
     }
     
     @IBAction func findUserLocationAndDropPin(sender: UIButton) {
-        activityIndicator.hidden = false
         if locationString.text != "" {
             getLocationFromString(locationString.text!)
-            activityIndicator.hidden = true
         } else {
             alertView("Enter a place to add to the map", message: "")
-            activityIndicator.hidden = true
         }
     }
     
     func getLocationFromString(locationText: String) {
         CLGeocoder().geocodeAddressString(locationText, completionHandler: { (placemark, error) in
+            self.activityIndicator.hidden = false
+            self.mapView.alpha = 0.8
             if error != nil {
+                self.activityIndicator.hidden = true
+                self.mapView.alpha = 1.0
                 self.alertView("There was a problem getting your place on the map", message: "")
             }
             if placemark != nil {
@@ -139,6 +140,8 @@ class SubmitInfoViewController : UIViewController, CLLocationManagerDelegate, MK
                 
                 let region = MKCoordinateRegionMakeWithDistance(userLocationCoordinates, 5000, 5000)
                 self.mapView.setRegion(region, animated: true)
+                self.activityIndicator.hidden = true
+                self.mapView.alpha = 1.0
             }
         })
     }
